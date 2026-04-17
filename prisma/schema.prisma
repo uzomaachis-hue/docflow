@@ -2,59 +2,12 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "sqlite"
-}
-
-enum UserRole {
-  ADMIN
-  MANAGING_DIRECTOR
-  EXECUTIVE_DIRECTOR
-  GENERAL_MANAGER
-  PRINCIPLE_MANAGER
-  SENIOR_MANAGER
-  MANAGER
-  ASSISTANT_MANAGER
-  OFFICER_1
-  OFFICER_2
-}
-
-enum Department {
-  ADMIN
-  HR
-  ICT
-  OPERATIONS
-  FINANCE
-  MARKETING
-  LEGAL
-  PROCUREMENT
-  LOGISTICS
-}
-
-enum TicketPriority {
-  CRITICAL
-  HIGH
-  MEDIUM
-  LOW
-}
-
-enum TicketStatus {
-  OPEN
-  IN_PROGRESS
-  RESOLVED
-  CLOSED
-}
-
-enum DocumentStatus {
-  PENDING
-  IN_PROGRESS
-  APPROVED
-  REJECTED
-  ARCHIVED
+  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -64,8 +17,8 @@ model User {
   password          String
   firstName         String
   lastName          String
-  role              UserRole
-  department        Department
+  role              String
+  department        String
   isActive          Boolean   @default(true)
   lastLogin         DateTime?
   lastLogout        DateTime?
@@ -89,7 +42,7 @@ model Document {
   recipientId       String
   sender            User      @relation("Sender", fields: [senderId], references: [id], onDelete: Cascade)
   recipient         User      @relation("Recipient", fields: [recipientId], references: [id], onDelete: Cascade)
-  status            DocumentStatus @default(PENDING)
+  status            String    @default("PENDING")
   isUrgent          Boolean   @default(false)
   viewedAt          DateTime?
   completedAt       DateTime?
@@ -112,8 +65,8 @@ model Ticket {
   id                String    @id @default(uuid())
   title             String
   description       String
-  priority          TicketPriority
-  status            TicketStatus @default(OPEN)
+  priority          String
+  status            String    @default("OPEN")
   userId            String
   assignedToId      String?
   user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
